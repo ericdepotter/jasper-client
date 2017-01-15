@@ -13,11 +13,17 @@ class KodiControlPlugin(plugin.SpeechHandlerPlugin):
         super(KodiControlPlugin, self).__init__(*args, **kwargs)
 
         self._logger = logging.getLogger(__name__)
-        self._kodicontrol = KodiControl(self.profile())
-        self._yamahacontrol = YamahaControl(self.profile())
+        self._kodicontrol = KodiControl(self.profile)
+        self._yamahacontrol = YamahaControl(self.profile)
 
     def is_valid(self, text):
-        pass
+        """
+        Returns True if the input is related to movies/shows.
+
+        Arguments:
+        text -- user-input, typically transcribed speech
+        """
+        return any(phrase in text.upper() for phrase in self.get_phrases())
 
     def get_phrases(self):
         return [self.gettext('MOVIES'), self.gettext('MOVIE'), self.gettext('SHOWS'), self.gettext('SHOW')]
