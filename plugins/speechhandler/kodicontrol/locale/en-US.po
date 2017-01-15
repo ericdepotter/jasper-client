@@ -1,0 +1,112 @@
+# Jasper KodiControl Plugin
+msgid ""
+msgstr ""
+"Project-Id-Version: Jasper 2.0\n"
+"Report-Msgid-Bugs-To: https://github.com/jasperproject/jasper-client/issues\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:23
+msgid "MOVIES"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:23
+msgid "MOVIE"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:23
+msgid "SHOWS"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:23
+msgid "SHOW"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:34
+msgid "Starting home theater"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:48
+msgid "STOP"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:48
+msgid "EXIT"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:48
+msgid "QUIT"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:49
+msgid "Shutting down home theater"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:56
+msgid "What do you want to do now?"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:60
+msgid "SEARCH"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:61
+msgid "Searching for movie {}"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:64
+msgid "PAUSE"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:65
+msgid "Pausing movie"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:68
+msgid "RESUME"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:68
+msgid "PLAY"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:68
+msgid "START"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:69
+msgid "Resuming movie"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:72
+msgid "STOP"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:73
+msgid "Stopping movie"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:80
+msgid "OPEN"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:81
+msgid "AND"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:81
+msgid "THE"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:88
+msgid "No such movie found"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:90
+msgid "Found multiple matching movies. Searching instead"
+msgstr ""
+
+#: plugins/speechhandler/kodicontrol/kodicontrol.py:92
+msgid "Starting movie"
+msgstr ""
