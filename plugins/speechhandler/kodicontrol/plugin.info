@@ -1,0 +1,10 @@
+[Plugin]
+Name = kodicontrol
+Version = 1.0.0
+License = MIT
+URL = http://jasperproject.github.io/
+Description = Control your KODI client and play movies or shows
+
+[Author]
+Name = Eric de Potter
+URL = https://github.com/ericdepotter/
