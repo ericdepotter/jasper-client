@@ -8,6 +8,11 @@ from misc.kodicontrol import KodiControl
 from misc.yamahacontrol import YamahaControl
 
 
+# TODO fetch playing status when handling commands
+# fix start not always starting (first time doesn't succeed of same movie)
+# autodiscover Yamaha when IP is not given
+# parse numbers from command
+# implement kodi scanning
 class KodiControlPlugin(plugin.SpeechHandlerPlugin):
     def __init__(self, *args, **kwargs):
         super(KodiControlPlugin, self).__init__(*args, **kwargs)
@@ -15,6 +20,8 @@ class KodiControlPlugin(plugin.SpeechHandlerPlugin):
         self._logger = logging.getLogger(__name__)
         self._kodicontrol = KodiControl(self.profile)
         self._yamahacontrol = YamahaControl(self.profile)
+
+        self._isPlaying = False
 
     def is_valid(self, text):
         """
@@ -37,33 +44,46 @@ class KodiControlPlugin(plugin.SpeechHandlerPlugin):
             mic -- used to interact with the user (for both input and output)
         """
 
-        mic.say(self.gettext('Starting home theater'))
-        self._yamahacontrol.on()
-        time.sleep(1)
-        self._yamahacontrol.setsource('HDMI1')
+        if not self._isPlaying:
+            mic.say(self.gettext('Starting home theater'))
+            self._yamahacontrol.on()
+            time.sleep(1)
+            self._yamahacontrol.setsource('HDMI1')
+            time.sleep(2)
 
         self.handlekodirequest(text, mic)
 
     def handlekodirequest(self, text, mic):
+        loop = True
+
         while True:
-            loop = True
+            text = text.upper().split(' ')
+
             if self.saidword(text, ['MOVIE', 'MOVIES'], stop=2):
-                self._kodicontrol.showmovies()
+                if not self._isPlaying:
+                    self._kodicontrol.showmovies()
+
                 loop = self.handlemovierequest(text, mic)
 
             elif self.saidword(text, ['STOP', 'EXIT', 'QUIT']):
                 mic.say(self.gettext('Shutting down home theater'))
                 self._yamahacontrol.off()
+                self._kodicontrol.stop()
+                self._isPlaying = False
+
+                self._kodicontrol.activatewindow('home')
+
                 return
 
             if not loop:
                 return
 
             mic.say(self.gettext('What do you want to do now?'))
-            text = mic.active_listen()
+            text = ' '.join(mic.active_listen())
 
     def handlemovierequest(self, text, mic):
-        if self.gettext('SEARCH') in text[0]:
+        if self.saidword(text, 'SEARCH', stop=1):
+            text = ' '.join(text)
             mic.say('Searching for movie {}'.format(text))
             self._kodicontrol.filter(text)
 
@@ -75,9 +95,12 @@ class KodiControlPlugin(plugin.SpeechHandlerPlugin):
             mic.say(self.gettext('Resuming movie'))
             self._kodicontrol.play()
 
+            return False
+
         elif self.gettext('STOP') in text[0]:
             mic.say(self.gettext('Stopping movie'))
             self._kodicontrol.stop()
+            self._isPlaying = False
 
         else:
             movies = self._kodicontrol.getmovies()
@@ -85,10 +108,22 @@ class KodiControlPlugin(plugin.SpeechHandlerPlugin):
             # format text for searching
             self.saidword(text, ['PLAY', 'START', 'OPEN', 'SHOW'], stop=1)
             self.saidword(text, ['AND', 'THE'])
+
+            text = ' '.join(text)
+
+            if len(text.strip()) == 0:
+                return True
+
             moviename = re.sub(r' ', '.*', text)
 
             matchedmovies = [movie for movie in movies if
-                             re.search(moviename, re.sub(r'[^a-zA-Z\d\s]', '', movie['label'], re.IGNORECASE))]
+                             re.search(moviename, re.sub(r'[^a-zA-Z\d\s]', '', movie['label']), re.IGNORECASE)]
+
+            # matchedmovies = []
+            # for movie in movies:
+            #     movietitle = re.sub(r'[^a-zA-Z\d\s]', '', movie['label'])
+            #     if re.search(moviename, movietitle, re.IGNORECASE):
+            #         matchedmovies.append(movie)
 
             if len(matchedmovies) == 0:
                 mic.say('No such movie found')
@@ -96,8 +131,9 @@ class KodiControlPlugin(plugin.SpeechHandlerPlugin):
                 mic.say('Found multiple matching movies. Searching instead')
                 self._kodicontrol.filter(text)
             else:
-                mic.say('Starting movie')
-                self._kodicontrol.playmovie(matchedmovies[0]['id'])
+                mic.say('Starting movie {0}'.format(matchedmovies[0]['label']))
+                self._kodicontrol.playmovie(matchedmovies[0]['movieid'])
+                self._isPlaying = True
 
                 return False
 

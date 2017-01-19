@@ -1,6 +1,7 @@
 import json
 import logging
 import requests
+import time
 
 
 KODI_CONTROL_URL = 'http://{}/jsonrpc'
@@ -11,6 +12,7 @@ REQUEST_BASE = {
 
 OK = "OK"
 
+
 class KodiControl:
     def __init__(self, config):
         self._logger = logging.getLogger(__name__)
@@ -20,11 +22,11 @@ class KodiControl:
         except KeyError:
             self._ip_address = 'localhost'
             self._logger.warning(
-                "No Kodi ip-address supplied, using '%d' instead",
+                "No Kodi ip-address supplied, using '%s' instead",
                 self._ip_address)
 
     def send_command(self, cmds):
-        request = []
+        response = []
 
         wrapped = False
         if not isinstance(cmds, list):
@@ -32,15 +34,18 @@ class KodiControl:
             wrapped = True
 
         for i, cmd in enumerate(cmds):
+            if i > 0:
+                time.sleep(1)
+
             cmd["id"] = i
-            request.append({key: value for (key, value) in (REQUEST_BASE.items() + cmd.items())})
+            request = {key: value for (key, value) in (REQUEST_BASE.items() + cmd.items())}
 
-        print 'Sending command ', request
+            self._logger.debug('Sending command: %s', request)
 
-        r = requests.post(KODI_CONTROL_URL.format(self._ip_address), json.dumps(request),
-                          headers={'Content-Type': 'application/json'})
+            r = requests.post(KODI_CONTROL_URL.format(self._ip_address), json.dumps(request),
+                              headers={'Content-Type': 'application/json'})
 
-        response = r.json()
+            response.append(r.json())
 
         if len(response) == 1 and wrapped:
             return response[0]
@@ -110,16 +115,23 @@ class KodiControl:
             }
         ])
 
-        return all(response['result'] == OK for response in responses)
+        try:
+            return all(response['result'] == OK for response in responses)
+        except KeyError:
+            return False
 
-    def activatewindow(self, window, params):
-        return self.send_command({
+    def activatewindow(self, window, params=None):
+        cmd = {
             "method": "GUI.ActivateWindow",
             "params": {
-                "window": window,
-                "parameters": params
+                "window": window
             }
-        })['result'] == OK
+        }
+
+        if params is not None:
+            cmd["parameters"] = params
+
+        return self.send_command(cmd)['result'] == OK
 
     def showmovies(self):
         return self.activatewindow("videos", ["MovieTitles"])

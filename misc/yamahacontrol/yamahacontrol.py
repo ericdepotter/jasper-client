@@ -1,3 +1,4 @@
+import logging
 import requests
 
 
@@ -6,10 +7,14 @@ YAMAHA_CONTROL_URL = 'http://{}:80/YamahaRemoteControl/ctrl'
 
 class YamahaControl:
     def __init__(self, config):
+        self._logger = logging.getLogger(__name__)
+
         self._ip_address = config['YAMAHA_IP']
 
     def send_command(self, cmd):
         request = '<YAMAHA_AV cmd="PUT"><Main_Zone>{}</Main_Zone></YAMAHA_AV>'.format(cmd)
+
+        self._logger.debug('Sending command: %s', request)
 
         r = requests.post(YAMAHA_CONTROL_URL.format(self._ip_address), request, headers={'Content-Type': 'text/xml'})
 
